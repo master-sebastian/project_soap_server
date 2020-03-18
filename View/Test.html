@@ -16,7 +16,7 @@
 		</soapenv:Body>\
 	</soapenv:Envelope>';
 
-	axios.post('http://localhost/projects/soap/server.php',
+	axios.post('http://127.0.0.1/projects/soap_project/Controllers/RunController.php',
 	    xmls,{
 	    	headers:{
 	    		'Content-Type': 'text/xml'
