@@ -1,0 +1,33 @@
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/x2js/1.2.0/xml2json.js"></script>
+<script>
+	let xmls='\
+	<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:web="http://www.webserviceX.NET/">\
+		<soapenv:Header/>\
+		<soapenv:Body>\
+		  <web:suma>\
+		  <param0>\
+		  2\
+		  </param0>\
+		  <param1>\
+		  2\
+		  </param1>\
+		  </web:suma>\
+		</soapenv:Body>\
+	</soapenv:Envelope>';
+
+	axios.post('http://localhost/projects/soap/server.php',
+	    xmls,{
+	    	headers:{
+	    		'Content-Type': 'text/xml'
+	    	}
+	    }).then((res)=>{
+	    	let x2js = new X2JS();
+	        let jsonObj = x2js.xml_str2json(res.data);
+
+			window.test=jsonObj
+	    }).catch((err)=>{
+	    	console.log(err)
+	    }
+	);
+</script>
