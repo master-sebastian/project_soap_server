@@ -1,23 +1,35 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/x2js/1.2.0/xml2json.js"></script>
 <script>
-	let xmls='\
+
+
+	function getXML(a, b){
+		return '\
 	<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:web="http://www.webserviceX.NET/">\
 		<soapenv:Header/>\
 		<soapenv:Body>\
-		  <web:suma>\
-		  <param0>\
-		  2\
-		  </param0>\
-		  <param1>\
-		  2\
-		  </param1>\
-		  </web:suma>\
+		  <__call>\
+			  <method_name>suma</method_name>\
+			  <arguments>\
+			  	<a xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">\
+				  	'+a+'\
+				</a>\
+				<b xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:type="xs:int">\
+				  	'+b+'\
+				</b>\
+			  </arguments>\
+			  <authentication>\
+			  	<token>\
+			  	</token>\
+			  </authentication>\
+		  </__call>\
 		</soapenv:Body>\
 	</soapenv:Envelope>';
-
-	axios.post('http://127.0.0.1/projects/soap_project/Controllers/RunController.php',
-	    xmls,{
+	}
+	let a = 20;
+	let b = 40;
+	axios.post('http://localhost/projects/soap_project/Route/Test/Test.php',
+	    getXML(a, b),{
 	    	headers:{
 	    		'Content-Type': 'text/xml'
 	    	}

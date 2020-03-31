@@ -1,14 +1,19 @@
 <?php
 	require '../Configuration.php';
 
+	if(!Configuration::$debug){
+		die();
+	}
+	
+	$uri = 'localhost/projects/soap_project/Route/Test/Test.php';
+
 	$parametros = [
-		'location' => Configuration::$locationTest,
-		'uri' => Configuration::$uriTest,
-		'trace' => 1
+		'location' => 'http://'.$uri,
+		'uri' => 'urn://'.$uri,
+		"trace" => 1,
 	];
-
+	
 	$cliente = new SoapClient(null, $parametros);
-
 	
 	$respuesta = $cliente->__soapCall('suma', 
 		[

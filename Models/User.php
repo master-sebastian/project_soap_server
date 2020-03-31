@@ -2,7 +2,7 @@
 
 	require 'Model.php';
 	
-	class Usuario extends Model
+	class User extends Model
 	{
 		public $table = 'usuarios';
 
@@ -10,6 +10,7 @@
 			'id',
 			'nombre',
 			'clave',
+			'token',
 			'created_at',
 			'updated_at'
 		];
@@ -19,6 +20,7 @@
 			'id' => 'int',
 			'nombre' => 'string',
 			'clave' => 'string',
+			'token' => 'string',
 			'created_at' => 'datetime',
 			'updated_at' => 'datetime'	
 		];

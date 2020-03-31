@@ -1,6 +1,5 @@
 <?php
-	require '../Configuration.php';
-	
+
 	Configuration::runConfiguration();
 
 	class Model
@@ -41,16 +40,33 @@
 			$pdo = $this->conection();
 			$cat = [];
 			$fillable = [];
-			$values = [];
+			$insert = [];
 			foreach ($data as $key => $value) {
 				$fillable []= $key;
-				$values []= $value;
-				$cat []= "?";
+				$cat []= ":".$key;
+				$insert[":".$key] = $value;
 			}
 			
 			$sql = "INSERT INTO ".$this->table." (".join(',',$fillable).") VALUES (".join(",", $cat).")";
+			
+			$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			
 			$stmt= $pdo->prepare($sql);
-			return $stmt->execute($values);
+				
+			try{
+				$pdo->beginTransaction();
+				$stmt->execute($insert);
+				return [
+					'success'=> $pdo->commit()
+				];
+			}catch(Exception $e){
+				$pdo->rollback();
+				//throw $e;
+				return [ 
+					'error' => $e->getMessage()
+				];
+			}
+			
 			
 		}
 
@@ -65,6 +81,7 @@
 			}
 
 			$sql = "SELECT ".join(',',$result)." FROM ".$this->table." ".$filter;
+
 			$array = [];
 			try {
 			    $mbd = $this->conection();
@@ -72,7 +89,7 @@
 
 			    	$filaAux = [];
 			    	foreach ($result == ['*']?$this->fillable:$result as $colum) {
-			    		array_push($filaAux, [$colum => $this->castingData($colum, $fila[$colum])]);
+			    		$filaAux[$colum] = $this->castingData($colum, $fila[$colum]);
 			    	}
 			        array_push($array, $filaAux);
 			    }
