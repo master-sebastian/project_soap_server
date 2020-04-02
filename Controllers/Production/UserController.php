@@ -48,7 +48,7 @@
 					return [
 						'token' => SegurityApp::getToken($result[0]['id'])
 					];
-				else{
+				}else{
 					return [
 						'status' => 'error',
 						'message' => 'La clave es incorrecta',
@@ -74,13 +74,13 @@
 
 			if($this->checkAuth($token)['status']){
 				return [
-					'status' => SegurityApp::closeToken($token)
+					'status' => SegurityApp::closeToken($token),
 					'message' => 'Se cerro la session'
 				];
 			}else{
 				return [
 					'message' => "Autenticate de nuevo"
-				]
+				];
 			}
 		}
 

@@ -45,7 +45,7 @@
 			}else{
 				return [
 					'status' => 'error',
-					'message' => 'Error al crear el producto'
+					'message' => 'Error al crear el producto',
 					'error' => $result
 				];
 			}

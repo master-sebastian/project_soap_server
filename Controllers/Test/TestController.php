@@ -25,9 +25,12 @@
 
 		public function __call($method_name, $arguments)
 	    {
-
-	    	if(!method_exists($this->class_name, $method_name))
-	            throw new Exception('method not found');
+			
+	    	if(!method_exists($this->class_name, $method_name)){
+	            return [
+					'status' => 'not fount'
+				];
+			}
 
 	        if(!$this->authenticated){
 	        	return "Not found authenticated";
@@ -38,7 +41,7 @@
 
 	    }
 
-		private function suma($a, $b){
+		public function suma($a, $b){
 			if(!$this->authenticated){
 	        	return "Not found authenticated";
 	        }
