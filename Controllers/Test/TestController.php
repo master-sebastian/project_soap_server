@@ -25,28 +25,41 @@
 
 		public function __call($method_name, $arguments)
 	    {
-			
-	    	if(!method_exists($this->class_name, $method_name)){
-	            return [
-					'status' => 'not fount'
-				];
+			if($arguments->authentication == "15hyhy"){
+				if($method_name == "+"){
+					return $this->suma($arguments->a, $arguments->b);
+				}else if($method_name == "-"){
+					return $this->resta($arguments->a, $arguments->b);
+				}if($method_name == "*"){
+					return $this->multiplicacion($arguments->a , $arguments->b);
+				}if($method_name == "/"){
+					return $this->division($arguments->a, $arguments->b);
+				}else{
+					return [
+						'status' => "No existe este servicio"
+					];
+				}
 			}
-
-	        if(!$this->authenticated){
-	        	return "Not found authenticated";
-	        }
-	        
-
-	        return call_user_func_array(array($this->class_name, $method_name), $arguments);
-
+			return [
+				'status' => "Sin autorizacion"
+			];
 	    }
 
 		public function suma($a, $b){
-			if(!$this->authenticated){
-	        	return "Not found authenticated";
-	        }
+			
+			return $a + $b;
+		}
 
-			return [$a + $b,2];
+		public function resta($a, $b){	
+			return $a - $b;
+		}
+
+		public function multiplicacion($a, $b){	
+			return $a * $b;
+		}
+
+		public function division($a, $b){	
+			return $a / $b;
 		}
 
 	}
