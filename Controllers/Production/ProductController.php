@@ -4,10 +4,6 @@
 
 	class ProductController
 	{
-		public function __construct(){
-
-		}
-
 		private function validation($id="", $nombre, $precio, $costo, $iva, $descripcion, $cantidad){
 			$errors = [];
 
@@ -20,21 +16,38 @@
 				$errors []= "El precio es no cumple como numerico";
 			}
 		}
+		public function __call($method_name, $arguments)
+	    {
+			if($method_name == "getListProduct"){
+				return $this->getListProduct($arguments);
+			}else if($method_name == "createProduct"){
+				return $this->createProduct($arguments);
+			}
+			return [$method_name, $arguments];
+		}
 
-		public function createProduct($id, $nombre, $precio, $costo, $iva, $descripcion, $cantidad){
+		private function getListProduct($arguments){
+			$product = new Product();
+			if($arguments->filter == "@"){
+				return $product->select();
+			}else{
+				return $product->select(["*"],
+					"descripcion like '%".$arguments->filter."%' OR nombre like '%".$arguments->filter."%'");
+			}
+		}
+
+		private function createProduct($arguments){
 			
 			$product = new Product();
 			
 			$result = $product->insert([
-				'id' => $id,
-				'nombre' => $nombre,
-				'precio' => $precio,
-				'costo' => $costo,
-				'iva' => $iva,
-				'descripcion' => $descripcion,
-				'cantidad' => $cantidad,
-				'created_at' => date('Y-m-d H:i:s'),
-				'updated_at' => date('Y-m-d H:i:s'),
+				'nombre' => $arguments->nombre,
+				'ganancia' => $arguments->ganancia,
+				'costo' => $arguments->costo,
+				'iva' => $arguments->iva,
+				'estado' => 1,
+				'descripcion' => $arguments->descripcion,
+				'url_img' => $arguments->url_img,
 			]);
 
 			if(array_key_exists('success', $result)){

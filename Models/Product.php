@@ -9,26 +9,27 @@
 		public $fillable = [
 			"id",
 			"nombre",
-			"precio",
-			"costo",
-			"iva",
 			"descripcion",
-			"cantidad",
-			"created_at",
-			"updated_at"
+			"url_img",
+			"estado",
+			"fecha_y_hora",
+			"iva",
+			"ganancia",
+			"costo"
 		];
 
 
 		public $fillableCast = [
 			"id" => "int",
 			"nombre" => "string",
-			"precio" => "float",
-			"costo" => "float",
-			"iva" => "float",
 			"descripcion" => "string",
-			"cantidad" => "float",
-			'created_at' => 'datetime',
-			'updated_at' => 'datetime'	
+			"url_img" => "string",
+			"estado" => "int",
+			"fecha_y_hora" => "datetime",
+			"iva" => "float",
+			"estado" => "int",
+			"costo" => "float",
+			"ganancia" => "float"
 		];
 
 	}
