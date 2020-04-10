@@ -32,8 +32,22 @@
 				$fillable []= $key."=".$this->castingDataInv($key, $value);
 			}
 			$sql = "UPDATE ".$this->table." SET ".join(',',$fillable)." ".$filter;
-			$stmt= $pdo->prepare($sql);
-			return $stmt->execute();			
+			$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$stmt = $pdo->prepare($sql);
+			
+			try{
+				$pdo->beginTransaction();
+				$stmt->execute();
+				return [
+					'success'=> $pdo->commit()
+				];
+			}catch(Exception $e){
+				$pdo->rollback();
+				//throw $e;
+				return [ 
+					'error' => $e->getMessage()
+				];
+			}
 		}
 
 		public function insert($data){

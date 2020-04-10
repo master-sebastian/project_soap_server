@@ -4,26 +4,49 @@
 
 	class ProductController
 	{
-		private function validation($id="", $nombre, $precio, $costo, $iva, $descripcion, $cantidad){
-			$errors = [];
-
-			if($id != "" and !preg_match("/^[0-9]{1,10}$/", $id)){
-				$errors []= "El id no cumple como numerico";
-			}
-			if($precio != ""){
-				$errors []= "El precio es requerido";
-			}else if(!preg_match("/^[0-9]{1,10}.[0-9]{1,2}$/", $precio)){
-				$errors []= "El precio es no cumple como numerico";
-			}
-		}
 		public function __call($method_name, $arguments)
 	    {
 			if($method_name == "getListProduct"){
 				return $this->getListProduct($arguments);
 			}else if($method_name == "createProduct"){
 				return $this->createProduct($arguments);
+			}else if($method_name == "getProduct"){
+				return $this->getProduct($arguments);
+			}else if($method_name == "editProduct"){
+				return $this->editProduct($arguments);
 			}
-			return [$method_name, $arguments];
+			return ['not fount',$method_name, $arguments];
+		}
+
+		private function editProduct($arguments){
+			$product = new Product();
+			$result = $product->update([
+				'nombre' => $arguments->nombre,
+				'ganancia' => $arguments->ganancia,
+				'costo' => $arguments->costo,
+				'iva' => $arguments->iva,
+				'estado' => $arguments->estado,
+				'descripcion' => $arguments->descripcion,
+				'url_img' => $arguments->url_img,
+			], "id = ".$arguments->id);
+
+			if(array_key_exists('success', $result)){
+				return [
+					'status' => 'success',
+					'message' => 'Se edito exitosamente el producto'
+				];	
+			}else{
+				return [
+					'status' => 'error',
+					'message' => 'Error al editar el producto',
+					'error' => $result
+				];
+			}
+		}
+		private function getProduct($arguments){
+			$product = new Product();
+			return $product->select(["*"],
+				"id = ".$arguments->id);
 		}
 
 		private function getListProduct($arguments){
