@@ -2,14 +2,35 @@
 
 	class UserController
 	{
-		public function createUser($nombre, $clave){
-           	
-           	require '../SegurityApp.php';
-            
+		public function __call($method_name, $arguments)
+	    {
+			if($method_name == "createUser"){
+				return $this->createUser($arguments->nombre, $arguments->clave);
+			}else if($method_name == "loginUser"){
+				return $this->loginUser($arguments->nombre, $arguments->clave);
+			}else if($method_name == "checkAuth"){
+				return $this->checkAuth($arguments->token);
+			}else if($method_name == "closeAuth"){
+				return $this->closeAuth($arguments->token);
+			}
+			return ['not fount',$method_name];
+		}	
+
+		private function createUser($nombre, $clave){
+			
+			if(strlen($clave) < 6){
+				return [
+					'status' => 'error',
+					'message' => 'La contraseña debe tener como minimo 6 caracteres',
+				];
+			}
+			
+			require_once '../SegurityApp.php';
+			require_once '../Models/User.php';
+			
             $user = new User();
             $result = $user->select(['*'],'nombre = "'.$nombre.'"');
             if(count($result) == 0){
-
             	$result = $user->insert([
 					'nombre' => $nombre,
 	                'clave' => SegurityApp::encriptar(sha1($clave)),
@@ -38,8 +59,10 @@
 			}
 		}
 
-		public function loginUser($nombre, $clave){
-			require '../SegurityApp.php';
+		private function loginUser($nombre, $clave){
+			require_once '../SegurityApp.php';
+			require_once '../Models/User.php';
+			
 			$user = new User();
 			$result = $user->select(['id'],'nombre = "'.$nombre.'"');
 			if(count($result) > 0){
@@ -62,16 +85,19 @@
 			}
 		}
 
-		public function checkAuth($token){
-			require '../SegurityApp.php';
+		private function checkAuth($token){
+			require_once '../SegurityApp.php';
+			require_once '../Models/User.php';
+
 			return [
 				'status' => SegurityApp::checkAuth($token)
 			];
 		}
 
-		public function closeAuth($token){
-			require '../SegurityApp.php';
-
+		private function closeAuth($token){
+			require_once '../SegurityApp.php';
+			require_once '../Models/User.php';
+			
 			if($this->checkAuth($token)['status']){
 				return [
 					'status' => SegurityApp::closeToken($token),

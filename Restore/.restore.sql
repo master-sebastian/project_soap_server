@@ -1,190 +1,276 @@
 
-SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
-SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
-SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
+SET time_zone = "+00:00";
 
--- -----------------------------------------------------
--- Table `clientes`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `clientes` ;
+-- --------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `clientes` (
-  `id` INT(10) NOT NULL AUTO_INCREMENT,
-  `nombre` VARCHAR(200) NOT NULL,
-  `num_doc` VARCHAR(20) NOT NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB;
+--
+-- Estructura de tabla para la tabla `clientes`
+--
 
+CREATE TABLE `clientes` (
+  `id` int(10) NOT NULL,
+  `nombre` varchar(200) NOT NULL,
+  `num_doc` varchar(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- -----------------------------------------------------
--- Table `mesas`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `mesas` ;
+-- --------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `mesas` (
-  `id` INT(2) NOT NULL AUTO_INCREMENT,
-  `nombre` VARCHAR(50) NOT NULL,
-  `esta_ocupada` INT(2) NOT NULL,
-  `token` TEXT NOT NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB;
+--
+-- Estructura de tabla para la tabla `comandas`
+--
 
+CREATE TABLE `comandas` (
+  `id` int(11) NOT NULL,
+  `precio` float(10,2) NOT NULL,
+  `estado` int(1) NOT NULL,
+  `iva` float(3,2) NOT NULL,
+  `fecha_y_hora` datetime NOT NULL,
+  `id_mesa` int(2) NOT NULL,
+  `id_soporte` int(2) DEFAULT NULL,
+  `productos_id` int(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- -----------------------------------------------------
--- Table `productos`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `productos` ;
+-- --------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `productos` (
-  `id` INT(10) NOT NULL AUTO_INCREMENT,
-  `nombre` VARCHAR(100) NOT NULL,
-  `descripcion` VARCHAR(45) NOT NULL,
-  `url_img` TEXT NOT NULL,
-  `estado` INT(1) NOT NULL,
-  `fecha_y_hora` VARCHAR(45) NOT NULL,
-  `costo` FLOAT(12,2) NOT NULL,
-  `iva` FLOAT(3,2) NOT NULL,
-  `precio` FLOAT(10,2) NOT NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB;
+--
+-- Estructura de tabla para la tabla `mesas`
+--
 
+CREATE TABLE `mesas` (
+  `id` int(2) NOT NULL,
+  `nombre` varchar(50) NOT NULL,
+  `token` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- -----------------------------------------------------
--- Table `roles`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `roles` ;
+-- --------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `roles` (
-  `id` INT(2) NOT NULL AUTO_INCREMENT,
-  `nombre` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB;
+--
+-- Estructura de tabla para la tabla `productos`
+--
 
+CREATE TABLE `productos` (
+  `id` int(10) NOT NULL,
+  `nombre` varchar(100) NOT NULL,
+  `descripcion` varchar(45) NOT NULL,
+  `url_img` text NOT NULL,
+  `estado` int(1) NOT NULL,
+  `fecha_y_hora` varchar(45) NOT NULL,
+  `costo` float(12,2) UNSIGNED ZEROFILL NOT NULL,
+  `iva` float(4,2) UNSIGNED ZEROFILL NOT NULL,
+  `ganancia` float(10,2) UNSIGNED ZEROFILL NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- -----------------------------------------------------
--- Table `servicios`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `servicios` ;
+-- --------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `servicios` (
-  `id` INT(10) NOT NULL,
-  `alias` VARCHAR(50) NOT NULL,
-  `descripcion` VARCHAR(200) NOT NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB;
+--
+-- Estructura de tabla para la tabla `roles`
+--
 
--- -----------------------------------------------------
--- Table `rolesxservice`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `rolesxservice` ;
+CREATE TABLE `roles` (
+  `id` int(2) NOT NULL,
+  `nombre` varchar(45) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE IF NOT EXISTS `rolesxservice` (
-  `id_rol` INT(2) NOT NULL,
-  `id_servicio` INT(10) NOT NULL,
-  PRIMARY KEY (`id_rol`, `id_servicio`),
-  CONSTRAINT `fk_rolesxservice_roles1`
-    FOREIGN KEY (`id_rol`)
-    REFERENCES `roles` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_rolesxservice_servicios1`
-    FOREIGN KEY (`id_servicio`)
-    REFERENCES `servicios` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+-- --------------------------------------------------------
 
--- -----------------------------------------------------
--- Table `usuarios`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `usuarios` ;
+--
+-- Estructura de tabla para la tabla `rolesxservice`
+--
 
-CREATE TABLE IF NOT EXISTS `usuarios` (
-  `id` INT(4) NOT NULL,
-  `nombre` VARCHAR(45) NOT NULL,
-  `clave` VARCHAR(200) NOT NULL,
-  `token` TEXT NOT NULL,
-  `id_rol` INT(2) NOT NULL,
-  `clientes_id` INT(10) NOT NULL,
-  PRIMARY KEY (`id`),
-  CONSTRAINT `fk_usuarios_roles`
-    FOREIGN KEY (`id_rol`)
-    REFERENCES `roles` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_usuarios_clientes1`
-    FOREIGN KEY (`clientes_id`)
-    REFERENCES `clientes` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+CREATE TABLE `rolesxservice` (
+  `id_rol` int(2) NOT NULL,
+  `id_servicio` int(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- --------------------------------------------------------
 
--- -----------------------------------------------------
--- Table `soportes`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `soportes` ;
+--
+-- Estructura de tabla para la tabla `servicios`
+--
 
-CREATE TABLE IF NOT EXISTS `soportes` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `total_a_pagar` FLOAT(20,2) NOT NULL,
-  `fecha_y_hora` DATETIME NOT NULL,
-  `usuarios_id` INT(4) NOT NULL,
-  `clientes_id` INT(10) NOT NULL,
-  PRIMARY KEY (`id`),
-  CONSTRAINT `fk_soporte_usuarios1`
-    FOREIGN KEY (`usuarios_id`)
-    REFERENCES `usuarios` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_soporte_clientes1`
-    FOREIGN KEY (`clientes_id`)
-    REFERENCES `clientes` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+CREATE TABLE `servicios` (
+  `id` int(10) NOT NULL,
+  `alias` varchar(50) NOT NULL,
+  `descripcion` varchar(200) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- --------------------------------------------------------
 
--- -----------------------------------------------------
--- Table `comandas`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `comandas` ;
+--
+-- Estructura de tabla para la tabla `soportes`
+--
 
-CREATE TABLE IF NOT EXISTS `comandas` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `ganancia` FLOAT(10,2) NOT NULL,
-  `estado` INT(1) NOT NULL,
-  `iva` FLOAT(3,2) NOT NULL,
-  `fecha_y_hora` DATETIME NOT NULL,
-  `id_mesa` INT(2) NOT NULL,
-  `id_soporte` INT(2) NULL,
-  `productos_id` INT(10) NOT NULL,
-  PRIMARY KEY (`id`, `productos_id`),
-  CONSTRAINT `fk_comandas_mesas1`
-    FOREIGN KEY (`id_mesa`)
-    REFERENCES `mesas` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_comandas_soporte1`
-    FOREIGN KEY (`id_soporte`)
-    REFERENCES `soportes` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_comandas_productos1`
-    FOREIGN KEY (`productos_id`)
-    REFERENCES `productos` (`id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
+CREATE TABLE `soportes` (
+  `id` int(11) NOT NULL,
+  `total_a_pagar` float(20,2) NOT NULL,
+  `fecha_y_hora` datetime NOT NULL,
+  `usuarios_id` int(4) NOT NULL,
+  `clientes_id` int(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-SET SQL_MODE=@OLD_SQL_MODE;
-SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+-- --------------------------------------------------------
 
-ALTER TABLE `productos` 
-  CHANGE `costo` `costo` FLOAT(12,2) UNSIGNED ZEROFILL NOT NULL, 
-  CHANGE `iva` `iva` FLOAT(4,2) UNSIGNED ZEROFILL NOT NULL, 
-  CHANGE `ganancia` `ganancia` FLOAT(10,2) UNSIGNED ZEROFILL NOT NULL;
+--
+-- Estructura de tabla para la tabla `usuarios`
+--
 
+CREATE TABLE `usuarios` (
+  `id` int(4) NOT NULL,
+  `nombre` varchar(45) NOT NULL,
+  `clave` varchar(200) NOT NULL,
+  `token` text NOT NULL,
+  `id_rol` int(2) DEFAULT NULL,
+  `clientes_id` int(10) DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Índices para tablas volcadas
+--
+
+--
+-- Indices de la tabla `clientes`
+--
+ALTER TABLE `clientes`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `comandas`
+--
+ALTER TABLE `comandas`
+  ADD PRIMARY KEY (`id`,`productos_id`),
+  ADD KEY `fk_comandas_mesas1` (`id_mesa`),
+  ADD KEY `fk_comandas_soporte1` (`id_soporte`),
+  ADD KEY `fk_comandas_productos1` (`productos_id`);
+
+--
+-- Indices de la tabla `mesas`
+--
 ALTER TABLE `mesas`
-  DROP `esta_ocupada`;
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `productos`
+--
+ALTER TABLE `productos`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `roles`
+--
+ALTER TABLE `roles`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `rolesxservice`
+--
+ALTER TABLE `rolesxservice`
+  ADD PRIMARY KEY (`id_rol`,`id_servicio`),
+  ADD KEY `fk_rolesxservice_servicios1` (`id_servicio`);
+
+--
+-- Indices de la tabla `servicios`
+--
+ALTER TABLE `servicios`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indices de la tabla `soportes`
+--
+ALTER TABLE `soportes`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_soporte_usuarios1` (`usuarios_id`),
+  ADD KEY `fk_soporte_clientes1` (`clientes_id`);
+
+--
+-- Indices de la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_usuarios_roles` (`id_rol`),
+  ADD KEY `fk_usuarios_clientes1` (`clientes_id`);
+
+--
+-- AUTO_INCREMENT de las tablas volcadas
+--
+
+--
+-- AUTO_INCREMENT de la tabla `clientes`
+--
+ALTER TABLE `clientes`
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `comandas`
+--
+ALTER TABLE `comandas`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `mesas`
+--
+ALTER TABLE `mesas`
+  MODIFY `id` int(2) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `productos`
+--
+ALTER TABLE `productos`
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `roles`
+--
+ALTER TABLE `roles`
+  MODIFY `id` int(2) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `soportes`
+--
+ALTER TABLE `soportes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+
+--
+-- AUTO_INCREMENT de la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  MODIFY `id` int(4) NOT NULL AUTO_INCREMENT;
+
+--
+-- Restricciones para tablas volcadas
+--
+
+--
+-- Filtros para la tabla `comandas`
+--
+ALTER TABLE `comandas`
+  ADD CONSTRAINT `fk_comandas_mesas1` FOREIGN KEY (`id_mesa`) REFERENCES `mesas` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_comandas_productos1` FOREIGN KEY (`productos_id`) REFERENCES `productos` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_comandas_soporte1` FOREIGN KEY (`id_soporte`) REFERENCES `soportes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Filtros para la tabla `rolesxservice`
+--
+ALTER TABLE `rolesxservice`
+  ADD CONSTRAINT `fk_rolesxservice_roles1` FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_rolesxservice_servicios1` FOREIGN KEY (`id_servicio`) REFERENCES `servicios` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Filtros para la tabla `soportes`
+--
+ALTER TABLE `soportes`
+  ADD CONSTRAINT `fk_soporte_clientes1` FOREIGN KEY (`clientes_id`) REFERENCES `clientes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_soporte_usuarios1` FOREIGN KEY (`usuarios_id`) REFERENCES `usuarios` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Filtros para la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  ADD CONSTRAINT `fk_usuarios_clientes1` FOREIGN KEY (`clientes_id`) REFERENCES `clientes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_usuarios_roles` FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+COMMIT;

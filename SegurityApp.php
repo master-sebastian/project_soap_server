@@ -63,7 +63,7 @@
 					$result = $user->select(['token'], 'id = '.$tokenCon->id);	
 					if(count($result) > 0){
 						$user = (object)$result[0];
-						if($token == $user->token and $user->token !="")
+						if($token == $user->token and $user->token !=""){
 							$result = $user->update([
 								'token' => "",
 								'updated_at' => date('Y-m-d H:i:s'),
@@ -90,7 +90,7 @@
 					$result = $user->select(['token'], 'id = '.$tokenCon->id);	
 					if(count($result) > 0){
 						$user = (object)$result[0];
-						if($token == $user->token and $user->token !="")
+						if($token == $user->token and $user->token !=""){
 							return true;
 						}
 					}
