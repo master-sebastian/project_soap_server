@@ -69,6 +69,7 @@
 				$result = $user->select(['id'],'nombre = "'.$nombre.'" AND clave = "'.SegurityApp::encriptar(sha1($clave)).'"');
 				if(count($result) > 0){
 					return [
+						'status'=> 'success',
 						'token' => SegurityApp::getToken($result[0]['id'])
 					];
 				}else{

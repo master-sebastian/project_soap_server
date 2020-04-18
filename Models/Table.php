@@ -1,6 +1,6 @@
 <?php
 
-	require 'Model.php';
+	require_once 'Model.php';
 	
 	class Table extends Model
 	{

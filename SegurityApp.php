@@ -79,6 +79,7 @@
 		}
 
 		public static function checkAuth($token){
+			
 			$tokenCon = json_decode(SegurityApp::desencriptar($token));
 
 			if(property_exists($tokenCon, 'start_session') and property_exists($tokenCon, 'end_session') and property_exists($tokenCon, 'id')){

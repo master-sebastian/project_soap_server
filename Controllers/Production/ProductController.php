@@ -4,18 +4,30 @@
 
 	class ProductController
 	{
-		public function __call($method_name, $arguments)
-	    {
-			if($method_name == "getListProduct"){
-				return $this->getListProduct($arguments);
-			}else if($method_name == "createProduct"){
-				return $this->createProduct($arguments);
-			}else if($method_name == "getProduct"){
-				return $this->getProduct($arguments);
-			}else if($method_name == "editProduct"){
-				return $this->editProduct($arguments);
+
+		public function __call($method_name, $arguments)		
+		{
+			require_once '../SegurityApp.php';
+			require_once '../Models/User.php';
+
+			if(SegurityApp::checkAuth($arguments->authentication) === true)
+			{
+				if($method_name == "getListProduct"){
+					return $this->getListProduct($arguments);
+				}else if($method_name == "createProduct"){
+					return $this->createProduct($arguments);
+				}else if($method_name == "getProduct"){
+					return $this->getProduct($arguments);
+				}else if($method_name == "editProduct"){
+					return $this->editProduct($arguments);
+				}
+				return ['not fount',$method_name, $arguments];
+			}else{
+				return [
+					'status' => 'error-autentication',
+					'message' => 'No tiene la autenticacion requerida para acceder a este modulo'
+				];
 			}
-			return ['not fount',$method_name, $arguments];
 		}
 
 		private function editProduct($arguments){
