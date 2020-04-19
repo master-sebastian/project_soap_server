@@ -6,16 +6,27 @@
 	{
 		public function __call($method_name, $arguments)
 	    {
-			if($method_name == "getListTable"){
-				return $this->getListTable($arguments);
-			}else if($method_name == "createTable"){
-				return $this->createTable($arguments);
-			}else if($method_name == "getTable"){
-				return $this->getTable($arguments);
-			}else if($method_name == "editTable"){
-				return $this->editTable($arguments);
+			require_once '../SegurityApp.php';
+			require_once '../Models/User.php';
+
+			if(SegurityApp::checkAuth($arguments->authentication) === true)
+			{
+				if($method_name == "getListTable"){
+					return $this->getListTable($arguments);
+				}else if($method_name == "createTable"){
+					return $this->createTable($arguments);
+				}else if($method_name == "getTable"){
+					return $this->getTable($arguments);
+				}else if($method_name == "editTable"){
+					return $this->editTable($arguments);
+				}
+				return ['not fount',$method_name, $arguments];
+			}else{
+				return [
+					'status' => 'error-autentication',
+					'message' => 'No tiene la autenticacion requerida para acceder a este modulo'
+				];
 			}
-			return ['not fount',$method_name, $arguments];
 		}
 
 		private function editTable($arguments){
