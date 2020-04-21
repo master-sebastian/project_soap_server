@@ -22,9 +22,15 @@
 				}
 				return ['not fount',$method_name, $arguments];
 			}else{
-				
 				if($method_name  == "loginTable"){
 					return $this->loginTable($arguments);
+				}
+				if($this->checkAuth($arguments->authentication) === true){
+					if($method_name == "getListProduct"){
+						return $this->getListProduct($arguments);
+					}else if($method_name == "addProduct"){
+						return $this->addProduct($arguments);
+					}
 				}
 				return [
 					'status' => 'error-autentication',
@@ -32,6 +38,70 @@
 				];
 			}
 		}
+
+		private function addProduct($arguments){
+			require_once '../Models/Command.php';
+			require_once '../Models/Product.php';
+			require_once '../SegurityApp.php';
+			require_once '../Models/User.php';
+			
+			$tokenCon = json_decode(SegurityApp::desencriptar($arguments->authentication));
+
+			$productSolicitado = new  Command();
+			
+			$result = $productSolicitado->insert([
+				'precio' => $arguments->precio,
+				'estado' => 1,
+				'iva' => $arguments->iva,
+				'fecha_y_hora'	=> date('Y-m-d H:i:s'),
+				'id_mesa'=> $tokenCon->idMesa,
+				'productos_id' => $arguments->idProducto
+			]);
+
+			if(array_key_exists('success', $result)){
+				return [
+					'status' => 'success',
+					'message' => 'Se solicito el producto a la mesa'
+				];	
+			}else{
+				return [
+					'status' => 'error',
+					'message' => 'Error no se pudo solicitar el producto a la mesa',
+					'error' => $result
+				];
+			}
+		}
+
+
+		private function getListProduct($arguments){
+			require_once '../Models/Product.php';
+			$product = new Product();
+			if($arguments->filter == "@"){
+				return $product->select();
+			}else{
+				return $product->select(["*"],
+					"descripcion like '%".$arguments->filter."%' OR nombre like '%".$arguments->filter."%'");
+			}
+		}
+
+		public function checkAuth($token){
+			
+			require_once '../SegurityApp.php';
+			require_once '../Models/User.php';
+			$tokenCon = json_decode(SegurityApp::desencriptar($token));
+			if(property_exists($tokenCon, 'idMesa') and property_exists($tokenCon, 'token')){
+				$table = new Table();
+				$result = $table->select(['token'], 'id = '.$tokenCon->idMesa);
+				if(count($result) > 0){
+					$table = (object)$result[0];
+					if($tokenCon->token == sha1($table->token) and sha1($table->token) !=""){
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
 
 		private function loginTable($arguments){
 			require_once '../SegurityApp.php';
@@ -49,7 +119,7 @@
 						'status'=> 'success',
 						'token' => SegurityApp::encriptar(json_encode(
 							array(
-								"idMesa" => $resultadoDeLaConsulta,
+								"idMesa" => $resultadoDeLaConsulta[0]['id'],
 								"token"=> sha1($clave)
 							)
 						))
