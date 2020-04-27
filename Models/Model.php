@@ -95,13 +95,13 @@
 			}
 
 			$sql = "SELECT ".join(',',$result)." FROM ".$this->table." ".$filter;
-
 			$array = [];
+			
 			try {
-			    $mbd = $this->conection();
+				$mbd = $this->conection();
 			    foreach($mbd->query($sql) as $fila) {
-
-			    	$filaAux = [];
+					
+					$filaAux = [];
 			    	foreach ($result == ['*']?$this->fillable:$result as $colum) {
 			    		$filaAux[$colum] = $this->castingData($colum, $fila[$colum]);
 			    	}

@@ -279,3 +279,8 @@ COMMIT;
 ALTER TABLE `comandas` ADD `nombre` VARCHAR(100) NOT NULL AFTER `productos_id`, ADD `url_img` TEXT NOT NULL AFTER `nombre`;
 
 ALTER TABLE `soportes` CHANGE `clientes_id` `clientes_id` INT(10) NULL;
+
+
+CREATE VIEW resumen AS (select me.id, me.nombre, co1.precio, co1.fecha_y_hora, 'd' as 'tipo' from  mesas as me, comandas as co1 where co1.id_soporte is null and co1.id_mesa = me.id
+union
+select me.id, me.nombre, co1.precio, co1.fecha_y_hora, 'r' as 'tipo' from  mesas as me, comandas as co1 where not co1.id_soporte is null and co1.id_mesa = me.id)

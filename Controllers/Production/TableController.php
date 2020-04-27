@@ -23,6 +23,8 @@
 					return $this->getListProductsCommandAdmin($arguments);
 				}else if($method_name == "payInvoice"){
 					return $this->payInvoice($arguments);
+				}else if($method_name == "getListTableSummary"){
+					return $this->getListTableSummary($arguments);
 				}
 				return ['not fount',$method_name, $arguments];
 			}else{
@@ -86,6 +88,31 @@
 			$product = new Command();
 			return $product->select(["*"], 'id_soporte is null and id_mesa = '.$arguments->idMesa);
 			
+		}
+
+		private function getListTableSummary($arguments){
+			require_once '../Models/Summary.php';
+			require_once '../Models/Table.php';
+			
+			$summary = new Summary();
+			$table = new Table();
+			$dateStart = date('Y-m-d 00:00:00');
+			$dateEnd = date('Y-m-d 23:59:59');
+			//"tipo = 'd' or ( tipo='r' and fecha_y_hora between '".$dateStart."' and '".$dateEnd."')"
+			$consul = $table->select(["*"]);
+			for( $item = 0; $item < count($consul); $item++){
+				$consul[$item]['d'] = 0;
+				$consul[$item]['r'] = 0;
+			}
+			foreach($summary->select(["*"]) as $item){
+				for( $item1 = 0; $item1 < count($consul); $item1++){
+					if($item['id'] == $consul[$item1]['id']){
+						$consul[$item1][$item['tipo']] += $item['precio'];
+						break;
+					}
+				}
+			}
+			return $consul;
 		}
 
 		private function payInvoice($arguments){
