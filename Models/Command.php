@@ -14,7 +14,9 @@
 			'fecha_y_hora',
 			'id_mesa',
 			'id_soparte',
-			'productos_id'
+			'productos_id',
+			'url_img',
+			'nombre',
 		];
 
 
@@ -26,7 +28,9 @@
 			'fecha_y_hora' => "datetime",
 			'id_mesa' => "int",
 			'id_soparte' => "int",
-			'productos_id' => "int"	
+			'productos_id' => "int",
+			'url_img' => "string",
+			'nombre' => "string" 	
 		];
 
 	}

@@ -19,6 +19,10 @@
 					return $this->getTable($arguments);
 				}else if($method_name == "editTable"){
 					return $this->editTable($arguments);
+				}else if($method_name == "getListProductsCommandAdmin"){
+					return $this->getListProductsCommandAdmin($arguments);
+				}else if($method_name == "payInvoice"){
+					return $this->payInvoice($arguments);
 				}
 				return ['not fount',$method_name, $arguments];
 			}else{
@@ -30,6 +34,8 @@
 						return $this->getListProduct($arguments);
 					}else if($method_name == "addProduct"){
 						return $this->addProduct($arguments);
+					}else if($method_name == "getListProductsCommand"){
+						return $this->getListProductsCommand($arguments);
 					}
 				}
 				return [
@@ -52,6 +58,8 @@
 			$result = $productSolicitado->insert([
 				'precio' => $arguments->precio,
 				'estado' => 1,
+				'nombre' => $arguments->nombre,
+				'url_img' => $arguments->url_img,
 				'iva' => $arguments->iva,
 				'fecha_y_hora'	=> date('Y-m-d H:i:s'),
 				'id_mesa'=> $tokenCon->idMesa,
@@ -72,6 +80,86 @@
 			}
 		}
 
+		private function getListProductsCommandAdmin($arguments){
+			require_once '../Models/Command.php';
+
+			$product = new Command();
+			return $product->select(["*"], 'id_soporte is null and id_mesa = '.$arguments->idMesa);
+			
+		}
+
+		private function payInvoice($arguments){
+			require_once '../Models/Invoice.php';
+			require_once '../Models/Command.php';
+			require_once '../SegurityApp.php';
+			require_once '../Models/User.php';
+
+			$tokenCon = json_decode(SegurityApp::desencriptar($arguments->authentication));
+
+			$invoice = new Invoice();
+			
+			$date = date('Y-m-d H:i:s');
+			
+			if($arguments->total <= 0){
+				return [
+					'status' => 'warning',
+					'message' => 'La mesa no tiene productos que pagar'
+				];	
+			}
+			
+			$result = $invoice->insert([
+				'total_a_pagar' => $arguments->total,
+				'fecha_y_hora' => $date,
+				'usuarios_id' => $tokenCon->id
+			]);
+			
+
+			if(array_key_exists('success', $result)){
+
+				$invoice = $invoice->select(['*'], "fecha_y_hora like '".$date."' and usuarios_id = ".$tokenCon->id);
+				
+				$invoice = (object) $invoice[0];
+				$command = new Command();
+
+				$result = $command->update([
+					'id_soporte' => $invoice->id
+				], 'id_mesa = '.$arguments->idMesa.' and id_soporte is null');
+				
+				if(array_key_exists('success', $result)){
+					return [
+						'status' => 'success',
+						'message' => 'Se pago la cuenta de la mesa'
+					];	
+				}else{
+					return [
+						'status' => 'error',
+						'message' => 'Error no se al pagar los productos',
+						'error' => $result
+					];	
+				}
+
+			}else{
+				return [
+					'status' => 'error',
+					'message' => 'Error no se pudo pagar la cuenta de la mesa',
+					'error' => $result
+				];
+			}
+			
+		}
+
+		private function getListProductsCommand($arguments){
+			require_once '../Models/Command.php';
+			require_once '../SegurityApp.php';
+			require_once '../Models/User.php';
+
+			$tokenCon = json_decode(SegurityApp::desencriptar($arguments->authentication));
+
+			$product = new Command();
+
+			return $product->select(["*"], 'id_soporte is null and id_mesa = '.$tokenCon->idMesa);
+			
+		}
 
 		private function getListProduct($arguments){
 			require_once '../Models/Product.php';

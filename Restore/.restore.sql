@@ -274,3 +274,8 @@ ALTER TABLE `usuarios`
   ADD CONSTRAINT `fk_usuarios_clientes1` FOREIGN KEY (`clientes_id`) REFERENCES `clientes` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_usuarios_roles` FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 COMMIT;
+
+
+ALTER TABLE `comandas` ADD `nombre` VARCHAR(100) NOT NULL AFTER `productos_id`, ADD `url_img` TEXT NOT NULL AFTER `nombre`;
+
+ALTER TABLE `soportes` CHANGE `clientes_id` `clientes_id` INT(10) NULL;
