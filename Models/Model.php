@@ -88,6 +88,27 @@
 		private function conection(){
 			return new PDO(Configuration::$dbDrive.":host=".Configuration::$dbHost.";dbname=".Configuration::$dbName.";port=".Configuration::$dbPort, Configuration::$dbUser, Configuration::$dbPassword);
 		}
+		
+		public function selectOptimaze($sql, $fillable, $fillableCast){
+			//$fillable Lista simple con los campos necesitados
+			//$fillableCast Lista con el casteo
+			$array = [];
+			try {
+				$mbd = $this->conection();
+			    foreach($mbd->query($sql) as $fila) {
+					$filaAux = [];
+			    	foreach ($fillable as $colum) {
+			    		$filaAux[$colum] = $this->castingDataOptimize($fillableCast, $colum, $fila[$colum]);
+			    	}
+			        array_push($array, $filaAux);
+			    }
+			    $mbd = null;
+			} catch (PDOException $e) {
+			    print "¡Error!: " . $e->getMessage() . "<br/>";
+			    die();
+			}
+			return $array;
+		}
 
 		public function select($result=['*'], $filter=''){
 			if($filter != ''){
@@ -114,6 +135,30 @@
 			}
 
 			return $array;
+		}
+
+		private function castingDataOptimize($fillableCast, $fillable, $value){
+			foreach ($fillableCast as $key => $valueKey) {
+				
+				if($key == $fillable ){
+					
+					if(is_null($value)){
+						return $value;
+					}
+					if($valueKey == 'string'){
+						return $value;
+					}else if($valueKey == 'int'){
+						return intval($value);
+					}else if($valueKey == 'float'){
+						return floatval($value);
+					}else if($valueKey == 'datetime'){
+						return new DateTime($value);
+					}else if($valueKey == 'date'){
+						return new Date($value);
+					}	
+				}
+			}
+			return $value;
 		}
 
 		private function castingData($fillable, $value){
